@@ -5,26 +5,28 @@ from src.data.db import get_db_connection
 
 @pytest.fixture(scope="function")
 def candle():
+    """
+    This creates the schema of a table for the functions to access
+    """
     conn = get_db_connection()
     try:
         with conn.cursor() as cur:
-            cur.execute("DROP TABLE IF EXISTS assets CASCADE")
-            cur.execute("DROP TABLE IF EXISTS candle")
             cur.execute("""
-            CREATE TABLE assets (
+            CREATE TABLE IF NOT EXISTS assets (
                 id BIGSERIAL PRIMARY KEY,
-                symbol TEXT NOT NULL);
+                symbol TEXT NOT NULL,
+                type TEXT NOT NULL);
             """)
             cur.execute("""
-            INSERT INTO assets (symbol) VALUES ('AAPL')
+            INSERT INTO assets (symbol, type) VALUES ('AAPL', 'test');
             """)
             cur.execute(""" 
-            INSERT INTO assets (symbol) VALUES ('AMZN')
+            INSERT INTO assets (symbol, type) VALUES ('AMZN', 'test');
             """)
             cur.execute("""
-            CREATE TABLE candle (
+            CREATE TABLE IF NOT EXISTS candle (
                 id BIGSERIAL PRIMARY KEY,
-                asset_id INT NOT NULL REFERENCES assets(id) ON DELETE CASCADE,
+                asset_id INT NOT NULL REFERENCES pytest_test_assets(id) ON DELETE CASCADE,
                 interval TEXT NOT NULL DEFAULT '1d',
                 ts TIMESTAMPTZ NOT NULL,
                 open NUMERIC(18,8),
@@ -47,89 +49,102 @@ def candle():
         yield
     finally:
         with conn.cursor() as cur:
-            cur.execute("DROP TABLE IF EXISTS assets CASCADE")
+            cur.execute("""
+            DELETE FROM assets a
+            WHERE a.type = 'test';
+            """)
         conn.commit()
         conn.close()
 
-def test_candle(candle):
-    #insert_candle(symbol, interval, timestamp, open_price, high, low, close, volume, adj_open, adj_high, adj_low, adj_close, adj_volume, div_cash, split_factor)
+def test_insert_candle(candle):
+    """
+    This tests creates the candle values and tests to make sure they are accurate
+    """
     conn = get_db_connection()
     try:
-        with conn.cursor() as cur:
-            insert_candle(
-                symbol='AAPL',
-                interval='1d',
-                timestamp='2019-01-02T00:00:00.000Z',
-                open_price=100.0,
-                high=110.0,
-                low=95.0,
-                close=105.0,
-                volume=1000000,
-                adj_open=99.0,
-                adj_high=109.0,
-                adj_low=94.0,
-                adj_close=104.0,
-                adj_volume=990000,
-                div_cash=0.0,
-                split_factor=1.0
-            )
+        #insert_candle(symbol, interval, timestamp, open_price, high, low, close, volume, adj_open, adj_high, adj_low, adj_close, adj_volume, div_cash, split_factor)
+        insert_candle(
+            symbol='AAPL',
+            interval='1d',
+            timestamp='2019-01-02T00:00:00.000Z',
+            open_price=100.0,
+            high=110.0,
+            low=95.0,
+            close=105.0,
+            volume=1000000,
+            adj_open=99.0,
+            adj_high=109.0,
+            adj_low=94.0,
+            adj_close=104.0,
+            adj_volume=990000,
+            div_cash=0.0,
+            split_factor=1.0
+        ) #inserts test candle data
 
-            #this imports the date into datetime, converts to datetime properly by replacing Z with +00:00
-            test_date_str = "2019-01-02T00:00:00.000Z"
-            if test_date_str.endswith('Z'):
-                test_date_str = test_date_str[:-1] + '+00:00'
-            test_date = test_date_str
-            dt = datetime.fromisoformat(test_date)
+        #this imports the date into datetime, converts to datetime properly by replacing Z with +00:00
+        test_date_str = "2019-01-02T00:00:00.000Z"
+        if test_date_str.endswith('Z'):
+            test_date_str = test_date_str[:-1] + '+00:00'
+        test_date = test_date_str
+        dt = datetime.fromisoformat(test_date)
 
-            #get_candle(symbol, start_date, end_date)
-            row = get_candle('AAPL', '2019-01-02T00:00:00.000Z', '2019-01-02T00:00:00.001Z')
-            assert row is not None
-            assert row[0]['symbol'] == 'AAPL'
-            assert row[0]['interval'] == '1d'
-            assert row[0]['ts'] == dt
-            assert row[0]['open'] == 100.0
-            assert row[0]['high'] == 110.0
-            assert row[0]['low'] == 95.0
-            assert row[0]['close'] == 105.0
-            assert row[0]['volume'] == 1000000
-            assert row[0]['adj_open'] == 99.0
-            assert row[0]['adj_high'] == 109.0
-            assert row[0]['adj_low'] == 94.0
-            assert row[0]['adj_close'] == 104.0
-            assert row[0]['adj_volume'] == 990000
-            assert row[0]['div_cash'] == 0.0
-            assert row[0]['split_factor'] == 1.0
+        #get_candle(symbol, start_date, end_date)
+        row = get_candle('AAPL', '2019-01-02T00:00:00.000Z', '2019-01-02T00:00:00.001Z')
+        assert row is not None
+        assert row[0]['symbol'] == 'AAPL'
+        assert row[0]['interval'] == '1d'
+        assert row[0]['ts'] == dt
+        assert row[0]['open'] == 100.0
+        assert row[0]['high'] == 110.0
+        assert row[0]['low'] == 95.0
+        assert row[0]['close'] == 105.0
+        assert row[0]['volume'] == 1000000
+        assert row[0]['adj_open'] == 99.0
+        assert row[0]['adj_high'] == 109.0
+        assert row[0]['adj_low'] == 94.0
+        assert row[0]['adj_close'] == 104.0
+        assert row[0]['adj_volume'] == 990000
+        assert row[0]['div_cash'] == 0.0
+        assert row[0]['split_factor'] == 1.0
+    finally:
+        pass
 
-            #delete_candle(symbol, date)
-            """ 
-            This portion will use assertions using delete_candle
-            """
-            #this assertion is used to check that the delete function only delete the selected row
-            insert_candle(
-                symbol='AMZN',
-                interval='1d',
-                timestamp='2019-01-02T00:00:00.000Z',
-                open_price=100.0,
-                high=110.0,
-                low=95.0,
-                close=105.0,
-                volume=1000000,
-                adj_open=99.0,
-                adj_high=109.0,
-                adj_low=94.0,
-                adj_close=104.0,
-                adj_volume=990000,
-                div_cash=0.0,
-                split_factor=1.0
-            )
-            delete_candle('AAPL', '2019-01-02T00:00:00.000Z')
-            row = get_candle('AAPL', '2019-01-02T00:00:00.000Z', '2019-01-02T00:00:00.001Z')
-            assert row is not None
-            assert len(row) == 0
+def test_delete_candle(candle):
+    """ 
+    This portion will use assertions using delete_candle
+    """
+    conn = get_db_connection()
+    try:
+        #delete_candle(symbol, date)
+
+        #this assertion is used to check that the delete function only delete the selected row
+        insert_candle(
+            symbol='AMZN',
+            interval='1d',
+            timestamp='2019-01-02T00:00:00.000Z',
+            open_price=100.0,
+            high=110.0,
+            low=95.0,
+            close=105.0,
+            volume=1000000,
+            adj_open=99.0,
+            adj_high=109.0,
+            adj_low=94.0,
+            adj_close=104.0,
+            adj_volume=990000,
+            div_cash=0.0,
+            split_factor=1.0
+        )
+        delete_candle('AAPL', '2019-01-02T00:00:00.000Z')
+        row = get_candle('AAPL', '2019-01-02T00:00:00.000Z', '2019-01-02T00:00:00.001Z')
+        assert row is not None
+        assert len(row) == 0
             
-            row = get_candle('AMZN', '2019-01-02T00:00:00.000Z', '2019-01-02T00:00:00.001Z')
-            assert row is not None
-            assert len(row) == 1
+        #checks if other row still exists
+        row = get_candle('AMZN', '2019-01-02T00:00:00.000Z', '2019-01-02T00:00:00.001Z')
+        assert row is not None
+        assert len(row) == 1
 
+        delete_candle('AMZN', '2019-01-02T00:00:00.000Z') #removes this from the table 
     finally:
         pass
