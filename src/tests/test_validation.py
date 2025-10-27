@@ -9,11 +9,11 @@ def test_validation():
     assert validate_symbol(int("5")) == False
 
     #validate_candle(open_price, high, low, close, volume)
-    assert validate_candle(150, 170, 120, 125, 14442) == True
-    assert validate_candle(150, 120, 170, 120, 15564) == False #checks for low < high flag
-    assert validate_candle(170, 150, 120, 125, 6152) == False #checks open_price > high flag
-    assert validate_candle(150, 170, 120, 125, -5) == False #checks negative flag
-    assert validate_candle(20, "str", 120, 125, -5) == False
+    assert validate_candle(150.0, 170.0, 120.0, 125.0, 14442) == True
+    assert validate_candle(150.0, 120.0, 170.0, 120.0, 15564) == False #checks for low < high flag
+    assert validate_candle(170.0, 150.0, 120.0, 125.0, 6152) == False #checks open_price > high flag
+    assert validate_candle(150.0, 170.0, 120.0, 125.0, -5) == False #checks negative flag
+    assert validate_candle(20.0, "str", 120.0, 125.0, -5) == False
 
     #validate_timestamp(ts)
     assert validate_timestamp("2019-01-02T00:00:00.000+04:00") == True
