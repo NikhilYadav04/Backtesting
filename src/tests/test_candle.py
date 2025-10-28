@@ -13,9 +13,14 @@ def candle():
         with conn.cursor() as cur:
             cur.execute("""
             CREATE TABLE IF NOT EXISTS assets (
-                id BIGSERIAL PRIMARY KEY,
-                symbol TEXT NOT NULL,
-                type TEXT NOT NULL);
+                id SERIAL PRIMARY KEY,
+                symbol TEXT NOT NULL UNIQUE,
+                name TEXT,
+                type TEXT,
+                exchange TEXT,
+                currency TEXT,
+                metadata JSONB
+            );
             """)
             cur.execute("""
             INSERT INTO assets (symbol, type) VALUES ('AAPL', 'test');
