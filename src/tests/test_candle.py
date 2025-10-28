@@ -23,10 +23,10 @@ def candle():
             );
             """)
             cur.execute("""
-            INSERT INTO assets (symbol, type) VALUES ('AAPL', 'test');
+            INSERT INTO assets (symbol, type) VALUES ('TEST', 'test');
             """)
             cur.execute(""" 
-            INSERT INTO assets (symbol, type) VALUES ('AMZN', 'test');
+            INSERT INTO assets (symbol, type) VALUES ('DUMY', 'test');
             """)
             cur.execute("""
             CREATE TABLE IF NOT EXISTS candle (
@@ -69,7 +69,7 @@ def test_insert_candle(candle):
     try:
         #insert_candle(symbol, interval, timestamp, open_price, high, low, close, volume, adj_open, adj_high, adj_low, adj_close, adj_volume, div_cash, split_factor)
         insert_candle(
-            symbol='AAPL',
+            symbol='TEST',
             interval='1d',
             timestamp='2019-01-02T00:00:00.000Z',
             open_price=100.0,
@@ -94,9 +94,9 @@ def test_insert_candle(candle):
         dt = datetime.fromisoformat(test_date)
 
         #get_candle(symbol, start_date, end_date)
-        row = get_candle('AAPL', '2019-01-02T00:00:00.000Z', '2019-01-02T00:00:00.001Z')
+        row = get_candle('TEST', '2019-01-02T00:00:00.000Z', '2019-01-02T00:00:00.001Z')
         assert row is not None
-        assert row[0]['symbol'] == 'AAPL'
+        assert row[0]['symbol'] == 'TEST'
         assert row[0]['interval'] == '1d'
         assert row[0]['ts'] == dt
         assert row[0]['open'] == 100.0
@@ -124,7 +124,7 @@ def test_delete_candle(candle):
 
         #this assertion is used to check that the delete function only delete the selected row
         insert_candle(
-            symbol='AMZN',
+            symbol='DUMY',
             interval='1d',
             timestamp='2019-01-02T00:00:00.000Z',
             open_price=100.0,
@@ -140,16 +140,16 @@ def test_delete_candle(candle):
             div_cash=0.0,
             split_factor=1.0
         )
-        delete_candle('AAPL', '2019-01-02T00:00:00.000Z')
-        row = get_candle('AAPL', '2019-01-02T00:00:00.000Z', '2019-01-02T00:00:00.001Z')
+        delete_candle('TEST', '2019-01-02T00:00:00.000Z')
+        row = get_candle('TEST', '2019-01-02T00:00:00.000Z', '2019-01-02T00:00:00.001Z')
         assert row is not None
         assert len(row) == 0
             
         #checks if other row still exists
-        row = get_candle('AMZN', '2019-01-02T00:00:00.000Z', '2019-01-02T00:00:00.001Z')
+        row = get_candle('DUMY', '2019-01-02T00:00:00.000Z', '2019-01-02T00:00:00.001Z')
         assert row is not None
         assert len(row) == 1
 
-        delete_candle('AMZN', '2019-01-02T00:00:00.000Z') #removes this from the table 
+        delete_candle('DUMY', '2019-01-02T00:00:00.000Z') #removes this from the table 
     finally:
         pass
