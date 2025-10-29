@@ -2,24 +2,35 @@ import pytest
 from src.data.assets import create_asset, get_asset_by_symbol, list_assets, delete_asset
 
 def test_create_assets():
-    assert delete_asset("AAPL") is True #If you run the test for a second, you have to clean this up, otherwise you'll get an error
-    assert create_asset("AAPL", "Apple Inc.", "stock", "NASDAQ", "USD") is True
-    row = get_asset_by_symbol("AAPL")
-    assert row["name"] == "Apple Inc."
+    assert create_asset("UNQM", "LuBec Inc.", "stock", "NASDAQ", "USD") is True
+    row = get_asset_by_symbol("UNQM")
+    assert row["name"] == "LuBec Inc."
     assert row["exchange"] == "NASDAQ"
+    delete_asset("UNQM")
+
 
 def test_list_assets():
-    create_asset("MSFT", "Microsoft Corp", "stock", "NASDAQ", "USD")
-    create_asset("BTC-USD", "Bitcoin", "crypto", "Coinbase", "USD")
+    create_asset("BLST", "Blast Inc", "stock", "NASDAQ", "USD")
+    create_asset("RGP", "RugPull", "crypto", "Coinbase", "USD")
     assets = list_assets()
     symbols = {a["symbol"] for a in assets}
-    assert {"MSFT", "BTC-USD"} <= symbols
+    assert {"BLST", "RGP"} <= symbols
+    delete_asset("BLST")
+    delete_asset("RGP")
+
 
     
 def test_delete_asset():
-    create_asset("TSLA", "Tesla Inc.", "stock", "NASDAQ", "USD")
-    assert delete_asset("TSLA") is True
-    assert get_asset_by_symbol("TSLA") is None
+    create_asset("UNQM", "LuBec Inc.", "stock", "NASDAQ", "USD")
+    assert delete_asset("UNQM") is True
+    assert get_asset_by_symbol("UNQM") is None
+    
+def test_invalid_create_assets():
+    assert create_asset("unmq", "LuBec Inc.", "stock", "NASDAQ", "USD") is False
+    assert create_asset("", "LuBec Inc.", "stock", "NASDAQ", "USD") is False
+
+
+
     
 #To make sure the connection works and you don't get an error w/local host
 # brew install postgresql

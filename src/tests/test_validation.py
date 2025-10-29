@@ -25,3 +25,8 @@ def test_validation():
     assert validate_timestamp(1) == False
     assert validate_timestamp(None) == False
     assert validate_timestamp("2019-02-10T21") == False
+
+def test_valid_argument():
+    assert valid_argument("") is False
+    assert valid_argument("   ") is False
+    assert valid_argument("Gh♫") is False

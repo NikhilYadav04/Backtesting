@@ -53,3 +53,22 @@ def validate_candle(open_price, high, low, close, volume):
     else:
         return True
     pass
+
+def valid_argument(argument):
+    """
+    Returns True if the argument is a non-empty string
+    containing only ASCII characters (codes <= 127).
+    Prevents Unicode input and blank strings.
+    This function could be further added upon to not allow 
+    inputs longer than x amount.
+    """
+    # Check that it's a string and not empty or all whitespace
+    if not isinstance(argument, str) or not argument.strip():
+        return False
+
+    # Check all characters are within ASCII range (0–127)
+    for char in argument:
+        if ord(char) > 127:
+            return False
+
+    return True
