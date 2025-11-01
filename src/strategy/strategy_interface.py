@@ -3,7 +3,7 @@ strategy_interface.py
 
 Defines the abstract base class `Strategy`, which serves as the interface
 for all trading strategy implementations. Each strategy must implement
-buy_signal, sell_signal, and allocation methods.
+stock_list, data_request_length, buy_signal, sell_signal, and allocation methods.
 """
 
 from abc import ABC, abstractmethod
@@ -22,7 +22,7 @@ class Strategy(ABC):
         returns that list.
         """
     @abstractmethod
-    def data_request(self) -> int:
+    def data_request_length(self) -> int:
         """
         Determines how many days worth of data are needed for the algo.
         This algorithm maybe is trying to find the 50 and 20 day averages so it will return 50
