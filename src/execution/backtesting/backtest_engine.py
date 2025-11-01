@@ -4,7 +4,7 @@ class BacktestEngine:
         self.data_provider = data_provider
         self.balance = initial_balance
         self.positions = {}   # { "AAPL": shares, "MSFT": shares }
-        self.history = []
+        self.balances = {}     # {"06-10-2001": 10203.51} //tracked balances
 
     def run(self):
         while (data := self.data_provider.get_next()) is not None:
@@ -35,7 +35,7 @@ class BacktestEngine:
             for sym, qty in self.positions.items():
                 total_value += qty * data[sym]["close"]
 
-            self.history.append({
+            self.balance.append({
                 "date": next(iter(data.values()))["date"],
                 "balance": total_value
             })
