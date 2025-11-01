@@ -1,5 +1,5 @@
 from src.strategy.strategy_interface import Strategy 
-from src.execution.dataclasses.dataclass import Position
+from ..dataclasses.dataclass import Position
 
 class BacktestEngine:
     """
