@@ -8,6 +8,7 @@ stock_list, data_request_length, buy_signal, sell_signal, and allocation methods
 
 from abc import ABC, abstractmethod
 
+#TODO make the data variable passed into some of the functions specifically a list type
 class Strategy(ABC):
     """
     Interface for all trading strategies.
@@ -34,7 +35,7 @@ class Strategy(ABC):
         """
         Determines whether to issue a buy signal.
         The input to this function will be a dataset full of time stamps and prices.
-           - Example: {"01-01-2000": 175, "01-02-2000": 175.53", ...} -> False
+           - Example: {175, 175.53", ...} -> False
            - Essentially this means if you put apple in your stock list and then run a 
              backtest, you will be given the data for apple and be expected to make a 
              decision whether to buy off of that.
@@ -46,7 +47,7 @@ class Strategy(ABC):
         """
         Determines whether to issue a sell signal.
         The input to this function will be a dataset full of time stamps and prices.
-           - Example: {"01-01-2000": 175, "01-02-2000": 175.53", ...} -> True
+           - Example: {175, 175.53", ...} -> True
            - Essentially this means if you put apple in your stock list and then run a 
              backtest, you will be given the data for apple and be expected to make a 
              decision whether to sell off of that.
@@ -59,7 +60,7 @@ class Strategy(ABC):
         The input to this function will likely vary a lot and we will need to find a way
         to specify that. Likely it will just be a dataset with time stamps on something
         like prices. 
-           - Example: {"01-01-2000": 175, "01-02-2000": 175.53", ...} -> 0.2 (This might
+           - Example: {175, 175.53", ...} -> 0.2 (This might
              mean invest 20% of whatever the intitial allocation is. So lets say we determine
              no position should have more than 10% of our account value and then this function
              return 0.2 it means we will only invest 2% of our account value.)

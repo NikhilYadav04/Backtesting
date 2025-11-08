@@ -3,13 +3,14 @@ from ..dataclasses.dataclass import Position
 
 class BacktestEngine:
     """
-    The BacktestingEngine is meant to allow someone to test there trading strategy.
+    The BacktestingEngine is meant to allow someone to test their trading strategy.
     It takes in a strategy name, a date range
     """ 
     def __init__(self, strategy: Strategy, date_range: dict, initial_balance=10000, position_size=1):
         self.strategy = strategy
         self.date_range = date_range
         self.balance = initial_balance
+        #TODO rename position_size to something more meaningful like initial_allocation
         self.position_size = position_size #This means we are putting 100% of account value in every trade.
         self.positions: dict[str, Position] = {}   # { "AAPL": position, "MSFT": position }
         self.balance_history = {}     # {"06-10-2001": 10203.51} //tracked balances
