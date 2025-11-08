@@ -8,6 +8,8 @@ So if the data does not exist create it sort of thing.
 """
 import psycopg2
 
+#TODO add type hints to all functions
+
 class DataAccess:
 
     """ Assets """
