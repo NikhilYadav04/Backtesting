@@ -19,7 +19,7 @@ class Strategy(ABC):
     """
 
     @abstractmethod
-    def stock_list(self, data) -> list[str]:
+    def stock_list(self) -> list[str]:
         """
         This function is expected to return the list of stocks that your strategy uses.
         This may mean this function creates an algorithm to determine the best stocks and
